@@ -62,9 +62,9 @@ for hypervizor in $PROVIDERS; do
   # Go project path
   cd $PROJECT_PATH
 
-  #echo 'n' | ./build.sh stretch $hypervizor $BRANCH
+  echo 'n' | ./build.sh stretch $hypervizor $BRANCH
   # move box to build directory
-  #mv vagrant-subutai-stretch-*.box ~/box/$BUILD_DIRECTORY
+  mv vagrant-subutai-stretch-*.box ~/box/$BUILD_DIRECTORY
   case "$hypervizor" in
       "vmware-iso")
         PROVIDER="vmware_desktop";
