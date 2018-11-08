@@ -11,45 +11,28 @@
 # default value is master                                    #
 #------------------------------------------------------------#
 # $3 => vagrant box name                                     #
-# default values is stretch                                  #
+# default values is stretch (stretch, xenial)                #
 #------------------------------------------------------------#
 
 
 # default values
-PROJECT_PATH="$HOME/packer"
-BRANCH=master
-VERSION=`cat $PROJECT_PATH/version`
+BRANCH=prod
 OS=`uname`
 BOX=stretch
-GIT_REPOSITORY=https://github.com/subutai-io/packer.git
-PACKER_CACHE_ISO="~/packer_cache"
 
-## clean
-rm -rf $PROJECT_PATH
-
-## clone packer project
-cd $HOME
-git clone $GIT_REPOSITORY
-cd $PROJECT_PATH
-
-if [ -d $PACKER_CACHE_ISO ]; then
-  echo "Copying iso to project directory"
-  cp -r $PACKER_CACHE_ISO $PROJECT_PATH
+if [ -n "$3" ]; then
+  $BOX=$3
 fi
 
-if [ "$2" = "prod" ]; then
+if [ "$2" = "master" ]; then
   # "master" is prod branch for 
   # vagrant subutai boxes provision script
-  BRANCH=prod
-  BOX_NAME=subutai/$BOX
-  git checkout master
-  git pull origin master
+  BRANCH=master
+  BOX_NAME=subutai/$BOX-master
 else
   # "stage" is master branch for 
   # vagrant subutai boxes provision script
-  BOX_NAME=subutai/$BOX-master
-  git checkout stage
-  git pull origin stage
+  BOX_NAME=subutai/$BOX
 fi
 
 if [ -n "$1" ]; then
@@ -80,37 +63,20 @@ elif [ -z "$PROVIDERS" ]; then
    fi
 fi
 
-
-mkdir -p $HOME/$BRANCH
-pkdir -p $HOME/$BRANCH/$BOX
-
-if [ ! -d "$PROJECT_PATH" ]; then
-  echo "Incorrect project path: "$PROJECT_PATH
-  exit 1
-fi
-
-BUILD_DIRECTORY="$HOME/$BRANCH/$BOX/$VERSION"
+PEER_DIRECTORY="$HOME/peer"
 
 # clean build directory if exist
 if [ -d $BUILD_DIRECTORY ]; then
-  echo "Removing build directory: "$BUILD_DIRECTORY
-  rm -rf $BRANCH/$VERSION
+  echo "Removing build directory: "$PEER_DIRECTORY
+  rm -rf $PEER_DIRECTORY
 fi
 
-mkdir -p $BUILD_DIRECTORY
+mkdir -p $PEER_DIRECTORY
 
 for hypervizor in $PROVIDERS; do
   # Go project path
-  cd $PROJECT_PATH
+  cd $PEER_DIRECTORY
 
-  echo 'n' | ./build.sh $BOX $hypervizor $BRANCH
-
-  if [ $? -gt 0 ]; then
-    exit 1
-  fi
-
-  # move box to build directory
-  mv vagrant-subutai-$BOX-*.box $BUILD_DIRECTORY
   case "$hypervizor" in
       "vmware-iso")
         PROVIDER="vmware_desktop";
@@ -126,14 +92,14 @@ for hypervizor in $PROVIDERS; do
         ;;
   esac
 
-  mkdir -p $PROJECT_PATH/test
-  cd $PROJECT_PATH/test
   # clean 
   rm -rf .vagrant
   rm -f Vagrantfile
   echo "-----------------"
   echo "Provider: "$PROVIDER
   echo "-----------------"
+  # update boxes
+  vagrant box update --box $BOX_NAME --provider $PROVIDER
 
   vagrant init $BOX_NAME
   SUBUTAI_ENV=$BRANCH vagrant up --provider $PROVIDER
