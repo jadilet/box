@@ -16,7 +16,7 @@
 
 
 # default values
-PROJECT_PATH="$HOME/packer/"
+PROJECT_PATH="$HOME/packer"
 BRANCH=master
 VERSION=`cat $PROJECT_PATH/version`
 OS=`uname`
