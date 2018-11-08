@@ -16,13 +16,13 @@
 
 
 # default values
-PROJECT_PATH="$HOME/packer"
+PROJECT_PATH="$HOME/packer/"
 BRANCH=master
 VERSION=`cat $PROJECT_PATH/version`
 OS=`uname`
 BOX=stretch
 GIT_REPOSITORY=https://github.com/subutai-io/packer.git
-PACKER_CACHE_ISO="~/packer_cache"
+PACKER_CACHE_ISO="$HOME/packer_cache/"
 
 ## clean
 rm -rf $PROJECT_PATH
@@ -31,11 +31,6 @@ rm -rf $PROJECT_PATH
 cd $HOME
 git clone $GIT_REPOSITORY
 cd $PROJECT_PATH
-
-if [ -d $PACKER_CACHE_ISO ]; then
-  echo "Copying iso to project directory"
-  cp -r $PACKER_CACHE_ISO $PROJECT_PATH
-fi
 
 if [ "$2" = "prod" ]; then
   # "master" is prod branch for 
@@ -50,6 +45,13 @@ else
   BOX_NAME=subutai/$BOX-master
   git checkout stage
   git pull origin stage
+fi
+
+if [ -d "$PACKER_CACHE_ISO" ]; then
+  echo "Copying iso to project directory"
+  cp -r $PACKER_CACHE_ISO $PROJECT_PATH
+else
+  echo "directory not found "$PACKER_CACHE_ISO
 fi
 
 if [ -n "$1" ]; then
@@ -82,7 +84,7 @@ fi
 
 
 mkdir -p $HOME/$BRANCH
-pkdir -p $HOME/$BRANCH/$BOX
+mkdir -p $HOME/$BRANCH/$BOX
 
 if [ ! -d "$PROJECT_PATH" ]; then
   echo "Incorrect project path: "$PROJECT_PATH
