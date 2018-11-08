@@ -8,7 +8,7 @@
 # default values for osx: parallels-iso                      #
 #------------------------------------------------------------#
 # $2 => git branch name                                      #
-# default value is master                                    #
+# default value is prod                                      #
 #------------------------------------------------------------#
 # $3 => vagrant box name                                     #
 # default values is stretch (stretch, xenial)                #
