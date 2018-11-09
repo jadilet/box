@@ -140,9 +140,5 @@ for hypervizor in $PROVIDERS; do
   vagrant init $BOX_NAME
   SUBUTAI_ENV=$BRANCH vagrant up --provider $PROVIDER
   vagrant destroy -f
-  echo 'SUBUTAI_DISK: 200' > vagrant-subutai.yml
-  SUBUTAI_ENV=$BRANCH vagrant up --provider $PROVIDER
-  vagrant destroy -f
-  rm vagrant-subutai.yml
 done
 
