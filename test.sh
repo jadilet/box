@@ -19,6 +19,7 @@
 BRANCH=prod
 OS=`uname`
 BOX=stretch
+DESTROY_ENABLED=true
 
 if [ -n "$3" ]; then
   $BOX=$3
@@ -106,7 +107,10 @@ for hypervizor in $PROVIDERS; do
   vagrant destroy -f
   echo 'SUBUTAI_DISK: 200' > vagrant-subutai.yml
   SUBUTAI_ENV=$BRANCH vagrant up --provider $PROVIDER
-  vagrant destroy -f
-  rm vagrant-subutai.yml
+
+  if ["$DESTROY_ENABLED" = true]; then
+    vagrant destroy -f
+    rm vagrant-subutai.yml
+  fi
 done
 
